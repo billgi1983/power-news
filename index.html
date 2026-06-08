@@ -237,55 +237,33 @@
     document.getElementById('card-index').innerText = `第 1 / ${ALL_CARDS.length} 則`;
   }
 
-  function deleteRowFromGoogle(rowNumber) {
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyuxGm11zQ4FEr4QZL5_ZSi6OhQszq07zpBd4AM5_zTELjDVcztjOHAJUtW1iP-ifk/exec";
+
+function deleteRowFromGoogle(rowNumber) {
     if (!confirm("確定要從 Google 試算表中刪除這一列嗎？")) return;
 
     const btn = document.querySelector(`#card-wrapper-${rowNumber} .delete-btn`);
     btn.innerText = "正在從雲端刪除...";
     btn.disabled = true;
 
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate?key=${API_KEY}`;
+    // 呼叫您專屬的 Apps Script 後門 API 進行刪除
+    const url = `${GAS_WEB_APP_URL}?action=delete&row=${rowNumber}`;
     
-    const body = {
-      requests: [
-        {
-          deleteDimension: {
-            range: {
-              sheetId: 0, 
-              dimension: "ROWS",
-              startIndex: rowNumber - 1, 
-              endIndex: rowNumber
-            }
-          }
-        },
-        {
-          appendDimension: {
-            sheetId: 0,
-            dimension: "ROWS",
-            length: 1
-          }
+    fetch(url)
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) {
+          alert("刪除並補列成功！");
+          loadDataFromGoogleSheet(); // 重新載入，刷新資料與真實行數
+        } else {
+          throw new Error("刪除失敗");
         }
-      ]
-    };
-
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
-    .then(res => {
-      if (!res.ok) throw new Error("刪除失敗");
-      return res.json();
-    })
-    .then(result => {
-      alert("刪除並補列成功！");
-      loadDataFromGoogleSheet(); 
-    })
-    .catch(err => {
-      alert("刪除失敗，請檢查權限或 API 設定。");
-      btn.innerText = "刪除此卡片";
-      btn.disabled = false;
-    });
+      })
+      .catch(err => {
+        alert("刪除失敗，請確認 Apps Script 網址是否正確。");
+        btn.innerText = "刪除此卡片";
+        btn.disabled = false;
+      });
   }
 </script>
 </body>
