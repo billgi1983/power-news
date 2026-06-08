@@ -12,7 +12,8 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      /* 使用 dvh (動態視口高度)，完美避開手機瀏覽器的上下工具列遮擋 */
+      height: 100dvh; 
       overflow: hidden;
     }
     .header-container {
@@ -25,6 +26,7 @@
       z-index: 10;
       height: 45px;
       box-sizing: border-box;
+      flex-shrink: 0; /* 確保標題列絕對不會被壓縮 */
     }
     h1 {
       margin: 0;
@@ -60,9 +62,9 @@
       box-sizing: border-box;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: stretch; /* 讓內部卡片自動撐滿高度 */
+      padding: 12px 16px; /* 這裡控制卡片與畫面邊緣的完美間距 */
       scroll-snap-align: start;
-      padding: 12px;
     }
     .card {
       background: white;
@@ -70,11 +72,11 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.06);
       width: 100%;
       max-width: 480px;
-      height: 82vh;
+      height: 100%; /* 放棄寫死的 vh，改用 100% 填滿剩餘空間 */
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px;
+      padding: 18px 20px;
       box-sizing: border-box;
       position: relative;
     }
@@ -93,12 +95,13 @@
       background-color: #ff3b30;
       color: white;
       border: none;
-      padding: 12px;
+      padding: 14px;
       border-radius: 8px;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       width: 100%;
+      flex-shrink: 0; /* 確保按鈕高度不會被過長的文字擠扁 */
       transition: background-color 0.2s;
     }
     .delete-btn:active {
